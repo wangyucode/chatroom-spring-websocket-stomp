@@ -1,9 +1,11 @@
 package cn.wycode.chat.controller
 
+import cn.wycode.chat.config.GEN_CODE_TIME_IN_MINUTES
 import cn.wycode.chat.entity.ChatMessage
 import cn.wycode.chat.entity.CommonMessage
 import cn.wycode.chat.entity.InitData
 import cn.wycode.chat.service.ChatService
+import cn.wycode.chat.service.REMOVE_MESSAGE_TIME_IN_MINUTES
 import org.springframework.messaging.handler.annotation.MessageMapping
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor
 import org.springframework.messaging.simp.annotation.SendToUser
@@ -20,7 +22,7 @@ class ChatController(val chatService: ChatService) {
     fun status(accessor: SimpMessageHeaderAccessor): CommonMessage<*> {
         return if (accessor.user != null) {
             chatService.sendSystemMessage(200, accessor.user!!.name)
-            CommonMessage.success(InitData(accessor.user!!.name.toInt(), chatService.users, chatService.messages, chatService.code))
+            CommonMessage.success(InitData(accessor.user!!.name.toInt(), chatService.users, chatService.messages, chatService.code, GEN_CODE_TIME_IN_MINUTES, REMOVE_MESSAGE_TIME_IN_MINUTES))
         } else {
             CommonMessage.fail(accessor.sessionAttributes!!["error"] as String)
         }

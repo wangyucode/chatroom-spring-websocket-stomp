@@ -34,4 +34,4 @@ data class ChatMessage(val user: Int,
                        val type: Int)
 
 
-data class InitData(val user: Int, val users: List<ChatUser>, val messages: List<ChatMessage>, val code: String)
+data class InitData(val user: Int, val users: List<ChatUser>, val messages: List<ChatMessage>, val code: String, val gen: Int, val remove: Int)

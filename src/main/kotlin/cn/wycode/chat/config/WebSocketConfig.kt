@@ -1,5 +1,6 @@
 package cn.wycode.chat.config
 
+import cn.wycode.chat.service.ADMIN_PASSCODE
 import cn.wycode.chat.service.ChatService
 import org.springframework.context.annotation.Configuration
 import org.springframework.messaging.Message
@@ -37,14 +38,21 @@ class WebSocketConfig(val chatService: ChatService) : WebSocketMessageBrokerConf
                 val accessor = MessageHeaderAccessor.getAccessor(message, StompHeaderAccessor::class.java)!!
                 if (StompCommand.CONNECT == accessor.command) {
                     val code = accessor.getNativeHeader("code")
-                    if (code != null && code.size > 0 && code[0] == chatService.code) {
-                        if (chatService.usersPool.size > 0) {
-                            val user = chatService.usersPool.removeAt(0)
-                            chatService.users.add(user)
-                            accessor.user = user
+                    if (code != null && code.size > 0) {
+                        if (code[0] == ADMIN_PASSCODE) {
+                            accessor.sessionAttributes!!["error"] = chatService.code
+                        } else if (code[0] == chatService.code) {
+                            if (chatService.usersPool.size > 0) {
+                                val user = chatService.usersPool.removeAt(0)
+                                chatService.users.add(user)
+                                accessor.user = user
+                            } else {
+                                accessor.sessionAttributes!!["error"] = "人数已满！"
+                            }
                         } else {
-                            accessor.sessionAttributes!!["error"] = "人数已满！"
+                            accessor.sessionAttributes!!["error"] = "邀请码错误！"
                         }
+
                     } else {
                         accessor.sessionAttributes!!["error"] = "邀请码错误！"
                     }

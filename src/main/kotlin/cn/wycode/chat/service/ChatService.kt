@@ -15,12 +15,16 @@ import java.time.temporal.TemporalField
 import java.util.*
 import kotlin.collections.ArrayList
 
+const val REMOVE_MESSAGE_TIME_IN_MINUTES = 3
+const val ADMIN_PASSCODE = "admin"
+
 @Service
 class ChatService {
 
     lateinit var messageTemplate: SimpMessagingTemplate
 
     val usersPool = mutableListOf(
+            ChatUser(0),
             ChatUser(1),
             ChatUser(2),
             ChatUser(3),
@@ -29,8 +33,7 @@ class ChatService {
             ChatUser(6),
             ChatUser(7),
             ChatUser(8),
-            ChatUser(9),
-            ChatUser(10)
+            ChatUser(9)
     )
 
     var code = ""
@@ -42,6 +45,7 @@ class ChatService {
         this.code = randomString(16)
         logger.info("${Date().toLocaleString()}: $code")
         this.sendSystemMessage(100, this.code)
+        removeOutdatedMessage()
     }
 
     fun sendSystemMessage(type: Int, content: String) {
@@ -53,7 +57,7 @@ class ChatService {
         logger.info("${Date().toLocaleString()}: removeOutdatedMessage")
         if (messages.size > 0) {
             val message = messages[0]
-            if (Date().time - message.time.time > 20L * 1000) {
+            if (Date().time - message.time.time > REMOVE_MESSAGE_TIME_IN_MINUTES * 60L * 1000) {
                 messages.removeAt(0)
                 removeOutdatedMessage()
             }

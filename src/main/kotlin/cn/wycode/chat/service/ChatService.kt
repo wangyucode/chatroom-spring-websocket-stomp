@@ -17,6 +17,7 @@ import kotlin.collections.ArrayList
 
 const val REMOVE_MESSAGE_TIME_IN_MINUTES = 3
 const val ADMIN_PASSCODE = "admin"
+const val GEN_CODE_TIME_IN_MINUTES = 2
 
 @Service
 class ChatService {

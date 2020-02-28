@@ -1,10 +1,10 @@
 package cn.wycode.chat.controller
 
-import cn.wycode.chat.config.GEN_CODE_TIME_IN_MINUTES
 import cn.wycode.chat.entity.ChatMessage
 import cn.wycode.chat.entity.CommonMessage
 import cn.wycode.chat.entity.InitData
 import cn.wycode.chat.service.ChatService
+import cn.wycode.chat.service.GEN_CODE_TIME_IN_MINUTES
 import cn.wycode.chat.service.REMOVE_MESSAGE_TIME_IN_MINUTES
 import org.springframework.messaging.handler.annotation.MessageMapping
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor

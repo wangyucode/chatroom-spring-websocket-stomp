@@ -11,6 +11,7 @@ import org.springframework.messaging.simp.stomp.StompCommand
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor
 import org.springframework.messaging.support.ChannelInterceptor
 import org.springframework.messaging.support.MessageHeaderAccessor
+import org.springframework.scheduling.TaskScheduler
 import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker
 import org.springframework.web.socket.config.annotation.StompEndpointRegistry
 import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerConfigurer
@@ -18,11 +19,12 @@ import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerCo
 
 @Configuration
 @EnableWebSocketMessageBroker
-class WebSocketConfig(val chatService: ChatService) : WebSocketMessageBrokerConfigurer {
+class WebSocketConfig(val chatService: ChatService,val taskScheduler: TaskScheduler) : WebSocketMessageBrokerConfigurer {
 
 
     override fun configureMessageBroker(config: MessageBrokerRegistry) {
         config.enableSimpleBroker("/topic/", "/queue/")
+                .setTaskScheduler(taskScheduler)
         config.setApplicationDestinationPrefixes("/app")
     }
 

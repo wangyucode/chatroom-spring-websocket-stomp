@@ -8,39 +8,26 @@ import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
 import org.springframework.messaging.simp.SimpMessagingTemplate
 import org.springframework.stereotype.Service
-import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
-import java.time.temporal.ChronoField
-import java.time.temporal.TemporalField
 import java.util.*
 import kotlin.collections.ArrayList
+import kotlin.collections.HashSet
 
-const val REMOVE_MESSAGE_TIME_IN_MINUTES = 3
+const val REMOVE_MESSAGE_TIME_IN_MINUTES = 30
 const val ADMIN_PASSCODE = "admin"
-const val GEN_CODE_TIME_IN_MINUTES = 2
+const val GEN_CODE_TIME_IN_MINUTES = 10
+const val MAX_USER_NUM = 10
 
 @Service
 class ChatService {
 
+    private final val logger: Log = LogFactory.getLog(this.javaClass)
+
     lateinit var messageTemplate: SimpMessagingTemplate
 
-    val usersPool = mutableListOf(
-            ChatUser(0),
-            ChatUser(1),
-            ChatUser(2),
-            ChatUser(3),
-            ChatUser(4),
-            ChatUser(5),
-            ChatUser(6),
-            ChatUser(7),
-            ChatUser(8),
-            ChatUser(9)
-    )
-
-    var code = ""
-    private final val logger: Log = LogFactory.getLog(this.javaClass)
+    var userNum = 0
+    var users =  HashSet<ChatUser>()
+    var code = randomString(16)
     val messages = ArrayList<ChatMessage>()
-    val users = ArrayList<ChatUser>()
 
     fun generateCode() {
         this.code = randomString(16)

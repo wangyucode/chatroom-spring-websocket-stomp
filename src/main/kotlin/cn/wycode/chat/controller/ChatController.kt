@@ -22,7 +22,7 @@ class ChatController(val chatService: ChatService) {
     fun status(accessor: SimpMessageHeaderAccessor): CommonMessage<*> {
         return if (accessor.user != null) {
             chatService.sendSystemMessage(200, accessor.user!!.name)
-            CommonMessage.success(InitData(accessor.user!!.name.toInt(), chatService.users, chatService.messages, chatService.code, GEN_CODE_TIME_IN_MINUTES, REMOVE_MESSAGE_TIME_IN_MINUTES))
+            CommonMessage.success(InitData(accessor.user!!.name.toInt(), chatService.users.size, chatService.messages, chatService.code, GEN_CODE_TIME_IN_MINUTES, REMOVE_MESSAGE_TIME_IN_MINUTES))
         } else {
             CommonMessage.fail(accessor.sessionAttributes!!["error"] as String)
         }

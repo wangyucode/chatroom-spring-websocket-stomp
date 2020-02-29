@@ -24,6 +24,14 @@ class ChatUser(val id: Int) : Principal {
     override fun getName(): String {
         return id.toString()
     }
+
+    override fun equals(other: Any?): Boolean {
+        return other is ChatUser && other.id == id
+    }
+
+    override fun hashCode(): Int {
+        return id.hashCode()
+    }
 }
 
 
@@ -34,4 +42,4 @@ data class ChatMessage(val user: Int,
                        val type: Int)
 
 
-data class InitData(val user: Int, val users: List<ChatUser>, val messages: List<ChatMessage>, val code: String, val gen: Int, val remove: Int)
+data class InitData(val user: Int, val size: Int, val messages: List<ChatMessage>, val code: String, val gen: Int, val remove: Int)

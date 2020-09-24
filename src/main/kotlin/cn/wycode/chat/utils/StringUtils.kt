@@ -1,17 +1,22 @@
 package cn.wycode.chat.utils
 
+import cn.wycode.chat.service.DealerService
 import kotlin.random.Random
+val random = Random(System.currentTimeMillis())
 
-
-fun randomString(length: Int): String {
+fun randomString(radix: Int, length: Int): String {
     val sb = StringBuilder(length)
-    val random = Random(System.currentTimeMillis())
     repeat(length) {
-        sb.append(random.nextInt(36).toString(36))
+        sb.append(random.nextInt(radix).toString(radix))
     }
     return sb.toString()
 }
 
 fun main() {
-    println(randomString(16))
+    val dealerService = DealerService()
+    repeat(100){
+        println(dealerService.getNewRoom())
+
+    }
+
 }

@@ -1,9 +1,10 @@
 package cn.wycode.chat.config
 
 import cn.wycode.chat.entity.ChatUser
-import cn.wycode.chat.service.ADMIN_PASSCODE
-import cn.wycode.chat.service.ChatService
-import cn.wycode.chat.service.MAX_USER_NUM
+import cn.wycode.chat.service.*
+import cn.wycode.chat.utils.randomString
+import org.apache.commons.logging.Log
+import org.apache.commons.logging.LogFactory
 import org.springframework.context.annotation.Configuration
 import org.springframework.messaging.Message
 import org.springframework.messaging.MessageChannel
@@ -21,8 +22,9 @@ import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerCo
 
 @Configuration
 @EnableWebSocketMessageBroker
-class WebSocketConfig(val chatService: ChatService, val taskScheduler: TaskScheduler) : WebSocketMessageBrokerConfigurer {
+class WebSocketConfig(val chatService: ChatService, val dealerService: DealerService, val taskScheduler: TaskScheduler) : WebSocketMessageBrokerConfigurer {
 
+    private final val logger: Log = LogFactory.getLog(this.javaClass)
 
     override fun configureMessageBroker(config: MessageBrokerRegistry) {
         config.enableSimpleBroker("/topic/", "/queue/")
@@ -45,6 +47,22 @@ class WebSocketConfig(val chatService: ChatService, val taskScheduler: TaskSched
                     if (code != null && code.size > 0) {
                         if (code[0] == ADMIN_PASSCODE) { //超级用户
                             accessor.sessionAttributes!!["error"] = chatService.code
+                        } else if (code[0] == DEALER_PASSCODE) { //发牌员
+                            val id = accessor.getNativeHeader("id")?.get(0)?.toInt()
+                            val roomId = accessor.getNativeHeader("roomId")?.get(0)
+                            val room = dealerService.rooms[roomId] ?: dealerService.getNewRoom()
+
+                            val user = if (id == null || id == 0) { //新用户
+                                chatService.userNum += 1
+                                ChatUser(chatService.userNum)
+                            } else { //断线重连
+                                ChatUser(id)
+                            }
+
+                            accessor.user = user
+
+                            room.users.add(user)
+
                         } else if (code[0] == chatService.code) { //合法用户
                             val id = accessor.getNativeHeader("id")
                             if (id != null && id.size > 0 && id[0].toInt() > 0) { //断线重连

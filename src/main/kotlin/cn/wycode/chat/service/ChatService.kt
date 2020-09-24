@@ -26,11 +26,11 @@ class ChatService {
 
     var userNum = 0
     var users =  HashSet<ChatUser>()
-    var code = randomString(16)
+    var code = randomString(36,16)
     val messages = ArrayList<ChatMessage>()
 
     fun generateCode() {
-        this.code = randomString(16)
+        this.code = randomString(36,16)
         logger.info("${Date().toLocaleString()}: $code")
         this.sendSystemMessage(100, this.code)
         removeOutdatedMessage()

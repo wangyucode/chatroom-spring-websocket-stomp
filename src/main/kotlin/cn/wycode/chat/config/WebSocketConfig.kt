@@ -1,8 +1,8 @@
 package cn.wycode.chat.config
 
 import cn.wycode.chat.entity.ChatUser
+import cn.wycode.chat.entity.DealerUser
 import cn.wycode.chat.service.*
-import cn.wycode.chat.utils.randomString
 import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
 import org.springframework.context.annotation.Configuration
@@ -53,15 +53,21 @@ class WebSocketConfig(val chatService: ChatService, val dealerService: DealerSer
                             val room = dealerService.rooms[roomId] ?: dealerService.getNewRoom()
 
                             val user = if (id == null || id == 0) { //新用户
-                                chatService.userNum += 1
-                                ChatUser(chatService.userNum)
+                                dealerService.userNum += 1
+                                DealerUser(dealerService.userNum, room.id)
                             } else { //断线重连
-                                ChatUser(id)
+                                DealerUser(id, room.id)
                             }
 
-                            accessor.user = user
+                            if (dealerService.rooms.size < MAX_ROOM_COUNT) {
+                                accessor.user = user
+                                room.users.add(user)
+                                dealerService.rooms[room.id] = room
+                            } else {
+                                accessor.sessionAttributes!!["error"] = "服务器房间已满！"
+                            }
 
-                            room.users.add(user)
+                            logger.debug(dealerService.rooms)
 
                         } else if (code[0] == chatService.code) { //合法用户
                             val id = accessor.getNativeHeader("id")

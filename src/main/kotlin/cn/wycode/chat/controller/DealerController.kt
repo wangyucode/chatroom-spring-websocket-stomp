@@ -18,7 +18,7 @@ class DealerController {
     @SendToUser("/queue/dealer/status")
     fun status(accessor: SimpMessageHeaderAccessor): CommonMessage<*> {
         return if (accessor.user != null) {
-            CommonMessage.success(1)
+            CommonMessage.success(accessor.user)
         } else {
             CommonMessage.fail(accessor.sessionAttributes!!["error"] as String)
         }

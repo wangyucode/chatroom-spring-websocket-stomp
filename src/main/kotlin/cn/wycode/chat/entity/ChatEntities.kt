@@ -19,7 +19,7 @@ data class CommonMessage<T>(val data: T?, val error: String?) {
     }
 }
 
-class ChatUser(val id: Int) : Principal {
+open class ChatUser(val id: Int) : Principal {
 
     override fun getName(): String {
         return id.toString()

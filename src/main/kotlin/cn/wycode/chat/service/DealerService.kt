@@ -1,5 +1,7 @@
 package cn.wycode.chat.service
 
+import cn.wycode.chat.entity.DealerCard
+import cn.wycode.chat.entity.DealerUser
 import cn.wycode.chat.entity.Room
 import cn.wycode.chat.utils.random
 import org.apache.commons.logging.Log
@@ -27,11 +29,38 @@ class DealerService {
         }
     }
 
-    fun getNewRoom(): Room {
+    fun newRoom(): Room {
         val index = random.nextInt(roomIdPool.size)
         val roomId = roomIdPool[index]
         roomIdPool.removeAt(index)
-        return Room(roomId, HashSet(MAX_ROOM_PLAYER))
+        val room =  Room(roomId, HashSet(MAX_ROOM_PLAYER))
+        rooms[roomId] = room
+        return room
     }
+
+    fun join(room: Room, user: DealerUser) {
+        room.users.add(user)
+        userNum++
+    }
+
+    fun assignCard(roomId: String, cards: List<DealerCard>): Room {
+        val roles = ArrayList<String>()
+        for(card in cards){
+            repeat(card.count){
+                roles.add(card.name)
+            }
+        }
+
+        val room = rooms[roomId]!!
+
+        for(user in room.users){
+            val index = random.nextInt(roles.size)
+            user.role = roles[index]
+            roles.removeAt(index)
+        }
+        return room
+    }
+
+
 }
 

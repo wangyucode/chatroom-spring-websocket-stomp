@@ -50,19 +50,17 @@ class WebSocketConfig(val chatService: ChatService, val dealerService: DealerSer
                         } else if (code[0] == DEALER_PASSCODE) { //发牌员
                             val id = accessor.getNativeHeader("id")?.get(0)?.toInt()
                             val roomId = accessor.getNativeHeader("roomId")?.get(0)
-                            val room = dealerService.rooms[roomId] ?: dealerService.getNewRoom()
+                            val room = dealerService.rooms[roomId] ?: dealerService.newRoom()
 
                             val user = if (id == null || id == 0) { //新用户
-                                dealerService.userNum += 1
-                                DealerUser(dealerService.userNum, room.id)
+                                DealerUser(dealerService.userNum + 1, room.id)
                             } else { //断线重连
                                 DealerUser(id, room.id)
                             }
 
                             if (dealerService.rooms.size < MAX_ROOM_COUNT) {
                                 accessor.user = user
-                                room.users.add(user)
-                                dealerService.rooms[room.id] = room
+                                dealerService.join(room, user)
                             } else {
                                 accessor.sessionAttributes!!["error"] = "服务器房间已满！"
                             }
